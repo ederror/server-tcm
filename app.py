@@ -1,6 +1,8 @@
 #-*- encoding: utf-8 -*-
 
 from flask import Flask, jsonify, request
+import json
+
 import torch
 import torchvision
 import torchvision.transforms as transforms
@@ -37,7 +39,7 @@ def predict_image(img):
     prob, preds  = torch.max(yb, dim=1)
     print(prob,preds)
     # Retrieve the class label
-    return preds[0].item(), classes[preds[0].item()]
+    return classes_dict[str(preds[0].item())]
 
 class OurModel(nn.Module):
     def forward(self, xb):
@@ -46,7 +48,8 @@ class OurModel(nn.Module):
 
 model = torch.load('_static/resnext50.pt')
 model.eval()
-classes = ['나무젓가락', 'cd', '헤어드라이어', '칫솔', '은박보냉백', '영수증', '알약', '아이스팩', '스파우트파우치', '마스크', '고무장갑', '건전지', '유리', '캔', '계란판', '종이', '플라스틱통', 'PET', '드라이버', '플라스틱', '요구르트병', '종이팩', '스프링노트', '상자', 'unknown']
+#classes = ['나무젓가락', 'cd', '헤어드라이어', '칫솔', '은박보냉백', '영수증', '알약', '아이스팩', '스파우트파우치', '마스크', '고무장갑', '건전지', '유리', '캔', '계란판', '종이', '플라스틱통', 'PET', '드라이버', '플라스틱', '요구르트병', '종이팩', '스프링노트', '상자', 'unknown']
+classes_dict = json.load(open('_static/trash_class_index.json'))
 device = get_default_device()
 print(device)
 to_device(model, device)
