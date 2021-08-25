@@ -20,6 +20,12 @@ except Exception as e:
     print(e) # table already exists
 
 cur.executemany('INSERT INTO trash VALUES (?, ?, ?, ?, ?)', buf)
-
 con.commit()
+
+# test
+cur.execute('SELECT * FROM trash WHERE tid < 200')
+results = cur.fetchall()
+for row in results:
+    print(row)
+
 con.close()
