@@ -1,6 +1,7 @@
 #-*- encoding: utf-8 -*-
 
 from flask import Flask, jsonify, request
+from flask_sqlalchemy import SQLAlchemy
 import json
 
 import torch
@@ -48,13 +49,24 @@ class OurModel(nn.Module):
 
 model = torch.load('_static/resnext50.pt')
 model.eval()
-#classes = ['나무젓가락', 'cd', '헤어드라이어', '칫솔', '은박보냉백', '영수증', '알약', '아이스팩', '스파우트파우치', '마스크', '고무장갑', '건전지', '유리', '캔', '계란판', '종이', '플라스틱통', 'PET', '드라이버', '플라스틱', '요구르트병', '종이팩', '스프링노트', '상자', 'unknown']
 classes_dict = json.load(open('_static/trash_class_index.json'))
 device = get_default_device()
 print(device)
 to_device(model, device)
 
 app = Flask(__name__)
+app.config["SQLALCHEMY_DATABASE_URI"] = 'sqlite:////_static/trash.db'
+db = SQLAlchemy(app)
+
+class Trash(db.Model):
+    tid = db.Column(db.Integer, primary_key=True)
+    trash_name = db.Column(db.String(20), unique=True, nullable=False)
+    trash_type = db.Column(db.String(20), unique=False, nullable=False)
+    trash_howto_desc = db.Column(db.String(100), unique=False, nullable=False)
+    trash_howto_id = db.Column(db.Integer, unique=False)
+
+    def __repr__(self):
+        return '<Trash %r>' % self.tid
 
 @app.route('/predict', methods=['POST']) # POST method만 허용
 def predict():
