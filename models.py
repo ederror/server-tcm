@@ -1,6 +1,10 @@
 from flask_sqlalchemy import SQLAlchemy
+from flask import Flask
 
-db = SQLAlchemy()
+#db = SQLAlchemy()
+app = Flask(__name__)
+app.config["SQLALCHEMY_DATABASE_URI"] = 'sqlite:///C:/Users/Shim/Desktop/Git/server-for-tfm/_static/trash.db'
+db = SQLAlchemy(app)
 
 class Trash(db.Model):
     tid = db.Column(db.Integer, primary_key=True)
@@ -10,4 +14,4 @@ class Trash(db.Model):
     trash_howto_id = db.Column(db.Integer, unique=False)
 
     def __repr__(self):
-        return '<Trash %r>' % self.tid
+        return '<Trash %r, name %s>' % (self.tid, self.trash_name)

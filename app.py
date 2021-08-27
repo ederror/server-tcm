@@ -2,7 +2,7 @@
 
 from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
-from models import Trash
+from models import Trash, app, db
 import json
 
 import torch
@@ -55,11 +55,16 @@ device = get_default_device()
 print(device)
 to_device(model, device)
 
+'''
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = 'sqlite:///C:/Users/Shim/Desktop/Git/server-for-tfm/_static/trash.db'
 db = SQLAlchemy(app)
-db.create_all()
-Trash.query.all()
+'''
+
+
+@app.route('/')
+def index():
+    return '<HTML><BODY><H1>TRASH IMAGE CLASSIFICATION REST API</H1></BODY></HTML>'
 
 @app.route('/predict', methods=['POST']) # POST method만 허용
 def predict():
@@ -71,4 +76,9 @@ def predict():
         return jsonify({'class_id': class_id, 'class_name': class_name})
 
 if __name__ == "__main__":
+    db.create_all()
+    db.session.add(Trash(tid=1, trash_name='페트병', trash_type='PET', trash_howto_desc='버리는 법', trash_howto_id = 1))
+    db.session.commit()
+    sometrash = Trash.query.filter_by(tid=1).first()
+    print(sometrash)
     app.run()
