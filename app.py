@@ -1,7 +1,6 @@
 #-*- encoding: utf-8 -*-
 
-from flask import Flask, jsonify, request
-from flask_sqlalchemy import SQLAlchemy
+from flask import jsonify, request
 from models import Trash, app, db
 import json
 
