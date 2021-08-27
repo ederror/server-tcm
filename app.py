@@ -1,6 +1,6 @@
 #-*- encoding: utf-8 -*-
 
-from flask import jsonify, request
+from flask import jsonify, request, render_template, url_for
 from models import Trash, app, db
 import json
 
@@ -63,7 +63,7 @@ db = SQLAlchemy(app)
 
 @app.route('/')
 def index():
-    return '<HTML><BODY><H1>TRASH IMAGE CLASSIFICATION REST API</H1></BODY></HTML>'
+    return render_template('index.html')
 
 @app.route('/predict', methods=['POST']) # POST method만 허용
 def predict():
@@ -74,10 +74,16 @@ def predict():
 
         return jsonify({'class_id': class_id, 'class_name': class_name})
 
+@app.route('/search', methods=['GET','POST'])
+def search():
+    if request.method == 'GET':
+        return render_template('search.html')
+    else:
+        print(f'func [search] called. submitted = {request.form["trash_name"]}')
+        found_trash = Trash.query.filter_by(trash_name=request.form['trash_name']).first()
+        return f'tid = {found_trash.tid}, 이름 = {found_trash.trash_name}, 종류 = {found_trash.trash_type}'
 if __name__ == "__main__":
     db.create_all()
-    db.session.add(Trash(tid=1, trash_name='페트병', trash_type='PET', trash_howto_desc='버리는 법', trash_howto_id = 1))
-    db.session.commit()
     sometrash = Trash.query.filter_by(tid=1).first()
     print(sometrash)
     app.run()
