@@ -50,7 +50,7 @@ class OurModel(nn.Module):
         return torch.softmax(self.backbone(xb), dim=1)
 
 
-model = torch.load('_static/resnext50.pt')
+model = torch.load('_static/resnet50.pt')
 model.eval()
 classes_dict = json.load(open('_static/trash_class_index.json'))
 device = get_default_device()
@@ -105,4 +105,4 @@ def upload():
 
 if __name__ == "__main__":
     db.create_all()
-    app.run()
+    app.run(host='0.0.0.0', port= 3654)

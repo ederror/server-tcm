@@ -3,15 +3,15 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>Minbo's REST API for image classification</title>
+        <title>REST API for tfm</title>
     </head>
     <body>
         <h1>Trash Image classification REST API</h1>
-        <p>search! ( test db )</p>
+        <p>by text</p>
         <form action="{{ url_for('search') }}" method="POST">
-            <label for="name">Trash name</label>
+            <label for="name">Enter Trash name</label>
             <input type="text" name="trash_name" id="name">
-            <button type="submit">보내기</button>
+            <button type="submit">search</button>
         </form>
     </body>
 </html>
