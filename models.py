@@ -3,7 +3,7 @@ from flask import Flask
 
 #db = SQLAlchemy()
 app = Flask(__name__)
-app.config["SQLALCHEMY_DATABASE_URI"] = 'sqlite:///C:/Users/Shim/Desktop/Git/server-for-tfm/_static/trash.db'
+app.config["SQLALCHEMY_DATABASE_URI"] = 'sqlite:///_static/trash.db'
 db = SQLAlchemy(app)
 
 class Trash(db.Model):

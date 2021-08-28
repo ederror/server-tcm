@@ -8,5 +8,6 @@ for cl in classes:
     classID += 1
     
 f = open("trash_class_index.json", "w")
-f.write(json.dumps(class_dict, ensure_ascii = False))
+#f.write(json.dumps(class_dict, ensure_ascii = False))
+json.dump(class_dict, f)
 f.close()

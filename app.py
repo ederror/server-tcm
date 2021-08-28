@@ -49,13 +49,15 @@ class OurModel(nn.Module):
     def forward(self, xb):
         return torch.softmax(self.backbone(xb), dim=1)
 
-
-model = torch.load('_static/resnet50.pt')
-model.eval()
-classes_dict = json.load(open('_static/trash_class_index.json'))
 device = get_default_device()
+model = torch.load('_static/resnext50.pt', map_location=device)
+model.eval()
+f = open('_static/trash_class_index.json', 'r', encoding='euc-kr')
+classes_dict = json.load(f) 
+#with open("_static/trash_class_index.json", encoding='utf-8') as f:
+#    class_dict=json.loads(f)
 print(f'current device = {device}')
-to_device(model, device)
+#to_device(model, device)
 
 @app.route('/')
 def index():
