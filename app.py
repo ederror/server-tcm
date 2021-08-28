@@ -1,8 +1,9 @@
 #-*- encoding: utf-8 -*-
 
-from flask import jsonify, request, render_template, url_for
+from flask import jsonify, request, render_template, url_for, redirect
 from models import Trash, app, db
 import json
+import os
 
 import torch
 import torchvision
@@ -13,6 +14,8 @@ import torch.nn.functional as F
 
 from PIL import Image
 from pathlib import Path
+
+app.config['UPLOAD_FOLDER'] = 'C:/Users/Shim/Desktop/Git/server-for-tfm/uploads'
 
 transformations = transforms.Compose([transforms.Resize(256),
                                     transforms.CenterCrop(224),
@@ -51,15 +54,8 @@ model = torch.load('_static/resnext50.pt')
 model.eval()
 classes_dict = json.load(open('_static/trash_class_index.json'))
 device = get_default_device()
-print(device)
+print(f'current device = {device}')
 to_device(model, device)
-
-'''
-app = Flask(__name__)
-app.config["SQLALCHEMY_DATABASE_URI"] = 'sqlite:///C:/Users/Shim/Desktop/Git/server-for-tfm/_static/trash.db'
-db = SQLAlchemy(app)
-'''
-
 
 @app.route('/')
 def index():
@@ -78,12 +74,35 @@ def predict():
 def search():
     if request.method == 'GET':
         return render_template('search.html')
-    else:
-        print(f'func [search] called. submitted = {request.form["trash_name"]}')
+    else: # POST
+        print(f'func [search] called.')
+        #if request.form["trash_name"]:
         found_trash = Trash.query.filter_by(trash_name=request.form['trash_name']).first()
+
         return f'tid = {found_trash.tid}, 이름 = {found_trash.trash_name}, 종류 = {found_trash.trash_type}'
+
+@app.route('/upload', methods=['GET','POST'])
+def upload():
+    if request.method == 'GET':
+        return render_template('upload.html')
+    else: # POST
+        print(f'func [upload] called.')
+        if request.files:
+            try:
+                os.stat(app.config['UPLOAD_FOLDER'])
+            except:
+                os.mkdir(app.config['UPLOAD_FOLDER'])
+            img = request.files['inputimg']
+            print(img, img.filename)
+            img.save(os.path.join(app.config['UPLOAD_FOLDER'] , img.filename))
+
+            img = transformations(Image.open(os.path.join(app.config['UPLOAD_FOLDER'] , img.filename)))
+            class_id, class_name = predict_image(img)
+            print(class_id, class_name)
+            found_trash = Trash.query.filter_by(trash_name=class_name).first()
+            return f'tid = {found_trash.tid}, 이름 = {found_trash.trash_name}, 종류 = {found_trash.trash_type}'
+        return redirect(url_for('upload', filename=img.filename))
+
 if __name__ == "__main__":
     db.create_all()
-    sometrash = Trash.query.filter_by(tid=1).first()
-    print(sometrash)
     app.run()
