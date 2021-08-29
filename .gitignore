@@ -3,3 +3,4 @@ env
 .DS_Store
 uploads
 env1
+__pycache__
