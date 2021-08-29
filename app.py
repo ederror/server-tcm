@@ -35,14 +35,12 @@ def to_device(data, device):
     return data.to(device, non_blocking=True)
 
 def predict_image(img):
-    # Convert to a batch of 1
+    print(img.size())
     xb = to_device(img.unsqueeze(0), device)
-    # Get predictions from model
+    print(xb.size())
     yb = model(xb)
-    # Pick index with highest probability
     prob, preds  = torch.max(yb, dim=1)
     print(prob,preds)
-    # Retrieve the class label
     return classes_dict[str(preds[0].item())]
 
 class OurModel(nn.Module):
@@ -50,12 +48,9 @@ class OurModel(nn.Module):
         return torch.softmax(self.backbone(xb), dim=1)
 
 device = get_default_device()
-model = torch.load('_static/resnext50.pt', map_location=device)
+model = torch.load('_static/resnext50_32x4d.pt', map_location = device)
 model.eval()
-f = open('_static/trash_class_index.json', 'r', encoding='euc-kr')
-classes_dict = json.load(f) 
-#with open("_static/trash_class_index.json", encoding='utf-8') as f:
-#    class_dict=json.loads(f)
+classes_dict = json.load(open('_static/trash_class_index.json'))
 print(f'current device = {device}')
 #to_device(model, device)
 
@@ -63,22 +58,12 @@ print(f'current device = {device}')
 def index():
     return render_template('index.html')
 
-@app.route('/predict', methods=['POST']) # POST method만 허용
-def predict():
-    if request.method == 'POST':
-        img_beforeTrans = Image.open(Path('_static/test.jpg'))
-        img = transformations(img_beforeTrans)
-        class_id, class_name = predict_image(img)
-
-        return jsonify({'class_id': class_id, 'class_name': class_name})
-
 @app.route('/search', methods=['GET','POST'])
 def search():
     if request.method == 'GET':
         return render_template('search.html')
     else: # POST
         print(f'func [search] called.')
-        #if request.form["trash_name"]:
         found_trash = Trash.query.filter_by(trash_name=request.form['trash_name']).first()
 
         return f'tid = {found_trash.tid}, 이름 = {found_trash.trash_name}, 종류 = {found_trash.trash_type}'
@@ -94,6 +79,7 @@ def upload():
                 os.stat(app.config['UPLOAD_FOLDER'])
             except:
                 os.mkdir(app.config['UPLOAD_FOLDER'])
+                
             img = request.files['inputimg']
             print(img, img.filename)
             img.save(os.path.join(app.config['UPLOAD_FOLDER'] , img.filename))
