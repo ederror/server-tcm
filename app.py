@@ -28,23 +28,17 @@ def get_default_device():
     else:
         return torch.device('cpu')
 
-def to_device(data, device):
-    """Move tensor(s) to chosen device"""
-    if isinstance(data, (list,tuple)):
-        return [to_device(x, device) for x in data]
-    return data.to(device, non_blocking=True)
-
 def predict_image(img):
-    print(img.size())
-    xb = to_device(img.unsqueeze(0), device)
-    print(xb.size())
+    xb = img.unsqueeze(0).to(device)
     yb = model(xb)
-    prob, preds  = torch.max(yb, dim=1)
+    prob, preds = torch.max(yb, dim=1)
     print(prob,preds)
+    print(preds[0].item(), type(preds[0].item()))
     return classes_dict[str(preds[0].item())]
 
 class OurModel(nn.Module):
     def forward(self, xb):
+        print('forward called!')
         return torch.softmax(self.backbone(xb), dim=1)
 
 device = get_default_device()
@@ -52,7 +46,6 @@ model = torch.load('_static/resnext50_32x4d.pt', map_location = device)
 model.eval()
 classes_dict = json.load(open('_static/trash_class_index.json'))
 print(f'current device = {device}')
-#to_device(model, device)
 
 @app.route('/')
 def index():
