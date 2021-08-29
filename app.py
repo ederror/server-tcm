@@ -21,12 +21,6 @@ transformations = transforms.Compose([transforms.Resize(256),
                                     transforms.CenterCrop(224),
                                     transforms.ToTensor(),
                                     transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])])
-def get_default_device():
-    """Pick GPU if available, else CPU"""
-    if torch.cuda.is_available():
-        return torch.device('cuda')
-    else:
-        return torch.device('cpu')
 
 def predict_image(img):
     xb = img.unsqueeze(0).to(device)
@@ -41,10 +35,10 @@ class OurModel(nn.Module):
         print('forward called!')
         return torch.softmax(self.backbone(xb), dim=1)
 
-device = get_default_device()
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 model = torch.load('_static/resnext50_32x4d.pt', map_location = device)
 model.eval()
-classes_dict = json.load(open('_static/trash_class_index.json'))
+classes_dict = json.load(open('_static/trash_class_index.json', encoding='cp949'))
 print(f'current device = {device}')
 
 @app.route('/')
