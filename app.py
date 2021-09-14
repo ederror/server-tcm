@@ -75,7 +75,8 @@ def upload():
             class_id, class_name = predict_image(img)
             print(class_id, class_name)
             found_trash = Trash.query.filter_by(trash_name=class_name).first()
-            return f'tid = {found_trash.tid}, 이름 = {found_trash.trash_name}, 종류 = {found_trash.trash_type}'
+            returnJson = jsonify({'tid': found_trash.tid, 'tname': found_trash.trash_name, 'ttype': found_trash.trash_type})
+            return returnJson
         return redirect(url_for('upload', filename=img.filename))
 
 if __name__ == "__main__":

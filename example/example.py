@@ -12,7 +12,8 @@ def upload():
     uri = url + '/upload'
     img = open('test.jpg', 'rb')
     response = requests.post(uri, files= {'inputimg': ('uploadimg.jpg', img, 'multipart/form-data')})
-    print(response.text)
+    ret = response.json()
+    print(ret)
 
 if __name__ == "__main__":
     tname = input("input the trash name : ")
