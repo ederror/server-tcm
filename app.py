@@ -15,7 +15,7 @@ import torch.nn.functional as F
 from PIL import Image
 from pathlib import Path
 
-app.config['UPLOAD_FOLDER'] = 'C:/Users/Shim/Desktop/Git/server-for-tfm/uploads'
+app.config['UPLOAD_FOLDER'] = os.getcwd() + '/uploads'
 
 transformations = transforms.Compose([transforms.Resize(256),
                                     transforms.CenterCrop(224),
@@ -32,7 +32,6 @@ def predict_image(img):
 
 class OurModel(nn.Module):
     def forward(self, xb):
-        print('forward called!')
         return torch.softmax(self.backbone(xb), dim=1)
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -50,9 +49,8 @@ def search():
     if request.method == 'GET':
         return render_template('search.html')
     else: # POST
-        print(f'func [search] called.')
+        print(f'/search - POST called.')
         found_trash = Trash.query.filter_by(trash_name=request.form['trash_name']).first()
-
         return f'tid = {found_trash.tid}, 이름 = {found_trash.trash_name}, 종류 = {found_trash.trash_type}'
 
 @app.route('/upload', methods=['GET','POST'])
@@ -60,7 +58,7 @@ def upload():
     if request.method == 'GET':
         return render_template('upload.html')
     else: # POST
-        print(f'func [upload] called.')
+        print(f'/upload - POST called.')
         if request.files:
             try:
                 os.stat(app.config['UPLOAD_FOLDER'])
@@ -68,15 +66,15 @@ def upload():
                 os.mkdir(app.config['UPLOAD_FOLDER'])
                 
             img = request.files['inputimg']
-            print(img, img.filename)
             img.save(os.path.join(app.config['UPLOAD_FOLDER'] , img.filename))
 
             img = transformations(Image.open(os.path.join(app.config['UPLOAD_FOLDER'] , img.filename)))
             class_id, class_name = predict_image(img)
             print(class_id, class_name)
+            
             found_trash = Trash.query.filter_by(trash_name=class_name).first()
-            returnJson = jsonify({'tid': found_trash.tid, 'tname': found_trash.trash_name, 'ttype': found_trash.trash_type})
-            return returnJson
+            resultJson = jsonify({'tid': found_trash.tid, 'tname': found_trash.trash_name, 'ttype': found_trash.trash_type, 'thowto': found_trash.trash_howto_desc, 'thowtoid': found_trash.trash_howto_id})
+            return resultJson
         return redirect(url_for('upload', filename=img.filename))
 
 if __name__ == "__main__":
