@@ -73,7 +73,7 @@ def upload():
             print(class_id, class_name)
             
             found_trash = Trash.query.filter_by(trash_name=class_name).first()
-            resultJson = jsonify({'tid': found_trash.tid, 'name': found_trash.trash_name, 'type': found_trash.trash_type, 'thowto': found_trash.trash_howto_desc, 'thowtoid': found_trash.trash_howto_id})
+            resultJson = jsonify({'tid': found_trash.tid, 'name': found_trash.trash_name, 'type': found_trash.trash_type, 'howto': found_trash.trash_howto_desc, 'howtoid': found_trash.trash_howto_id})
             return resultJson
         return redirect(url_for('upload', filename=img.filename))
 
