@@ -3,7 +3,8 @@
 
 Flask Rest API Server for Trash Classification Model
 
-## How to use
+# How to use
+## Predict API
 ### Request
 
 ```http
@@ -25,3 +26,25 @@ Content-Type: multipart/form-data
   "howtoid": '분류id'
 }
 ```
+
+## Can API
+### Request
+
+```http
+GET /upload
+trash_type: 쓰레기분류(일반쓰레기/폐건전지/폐형광등/아이스팩)
+```
+| Name | Description |
+| ---- | ----------- |
+| `trash_type` | 쓰레기분류(일반쓰레기/폐건전지/폐형광등/아이스팩) |
+### Response
+[Json]
+| Name | Description |
+| ---- | ----------- |
+| `cid` | id |
+| `city` | 구 |
+| `trash_type` | 쓰레기 분류 |
+| `addr` | 주소(도로명주소) |
+| `detail_addr` | 상세주소 |
+| `latitude` | 위도 |
+| `longitude` | 경도 |
