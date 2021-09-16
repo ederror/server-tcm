@@ -1,7 +1,7 @@
 #-*- encoding: utf-8 -*-
 
 from flask import jsonify, request, render_template, url_for, redirect
-from models import Trash, app, db
+from models import Trash, Can, app, db
 import json
 import os
 
@@ -75,8 +75,22 @@ def upload():
             found_trash = Trash.query.filter_by(trash_name=class_name).first()
             resultJson = jsonify({'tid': found_trash.tid, 'name': found_trash.trash_name, 'type': found_trash.trash_type, 'howto': found_trash.trash_howto_desc, 'howtoid': found_trash.trash_howto_id})
             return resultJson
-        return redirect(url_for('upload', filename=img.filename))
+        return redirect(url_for('upload'))
 
+@app.route('/can', methods=['GET'])
+def can():
+    if request.method == 'GET':
+        print('can - GET called.')
+        _trash_type = request.args.get("trash_type")
+        _city = request.args.get("city")
+        found_can = Can.query.filter_by(trash_type=_trash_type, city=_city).all()
+        resultJson = []
+        for can in found_can:
+            resultJson.append(jsonify({'cid': can.cid, 'addr': can.addr}))
+        print(resultJson)
+        return 'hi'
+        
+        #http://192.168.0.5:3654/can?city=도봉구&trash_type=아이스팩
 if __name__ == "__main__":
     db.create_all()
     app.run(host='0.0.0.0', port= 3654)

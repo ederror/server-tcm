@@ -24,3 +24,6 @@ class Can(db.Model):
     detail_addr = db.Column(db.String(100), unique=False, nullable=True)
     latitude = db.Column(db.Float, unique=False, nullable=True)
     longitude = db.Column(db.Float, unique=False, nullable=True)
+    
+    def __repr__(self):
+        return '<Can %r, type = %s, addr = %s>' % (self.cid, self.trash_type, self.addr)
