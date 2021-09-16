@@ -15,3 +15,12 @@ class Trash(db.Model):
 
     def __repr__(self):
         return '<Trash %r, name %s>' % (self.tid, self.trash_name)
+    
+class Can(db.Model):
+    cid = db.Column(db.Integer, primary_key=True)
+    city = db.Column(db.String(20), unique=True, nullable=False)
+    trash_type = db.Column(db.String(20), unique=False, nullable=False)
+    addr = db.Column(db.String(50), unique=False, nullable=False)
+    detail_addr = db.Column(db.String(100), unique=False, nullable=True)
+    latitude = db.Column(db.Float, unique=False, nullable=True)
+    longitude = db.Column(db.Float, unique=False, nullable=True)
