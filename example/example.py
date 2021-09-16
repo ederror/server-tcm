@@ -15,7 +15,15 @@ def upload():
     ret = response.json()
     print(ret)
 
+def can(city, ttype):
+    uri = url + '/can' + f'?city={city}&trash_type={ttype}'
+    response = requests.get(uri)
+    ret = response.json()
+    for c in ret:
+        print(c['detail_addr'])
+
 if __name__ == "__main__":
-    tname = input("input the trash name : ")
-    search(tname)
-    upload()
+    #tname = input("input the trash name : ")
+    #search(tname)
+    #upload()
+    can('도봉구', '아이스팩')
