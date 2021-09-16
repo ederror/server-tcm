@@ -27,3 +27,6 @@ class Can(db.Model):
     
     def __repr__(self):
         return '<Can %r, type = %s, addr = %s>' % (self.cid, self.trash_type, self.addr)
+    
+    def dict(self):
+        return {'cid': self.cid, 'city': self.city, 'trash_type': self.trash_type, 'addr': self.addr, 'detail_addr': self.detail_addr, 'latitude': self.latitude, 'longitude': self.longitude}

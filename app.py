@@ -16,6 +16,7 @@ from PIL import Image
 from pathlib import Path
 
 app.config['UPLOAD_FOLDER'] = os.getcwd() + '/uploads'
+app.config['JSON_AS_ASCII'] = False
 
 transformations = transforms.Compose([transforms.Resize(256),
                                     transforms.CenterCrop(224),
@@ -81,16 +82,17 @@ def upload():
 def can():
     if request.method == 'GET':
         print('can - GET called.')
-        _trash_type = request.args.get("trash_type")
-        _city = request.args.get("city")
-        found_can = Can.query.filter_by(trash_type=_trash_type, city=_city).all()
+        trash_type = request.args.get("trash_type")
+        city = request.args.get("city")
+
+        found_can = Can.query.filter_by(trash_type=trash_type, city=city).all()
+
         resultJson = []
         for can in found_can:
-            resultJson.append(jsonify({'cid': can.cid, 'addr': can.addr}))
-        print(resultJson)
-        return 'hi'
-        
-        #http://192.168.0.5:3654/can?city=도봉구&trash_type=아이스팩
+            resultJson.append(can.dict())
+
+        return jsonify(resultJson)
+
 if __name__ == "__main__":
     db.create_all()
     app.run(host='0.0.0.0', port= 3654)
